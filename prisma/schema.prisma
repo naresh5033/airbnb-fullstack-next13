@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb" //replace the postgre with mongo
+  url      = env("DATABASE_URL")
+}
+
+//lets put all our modals in here
+//1. User modal
+
+model User {
+  // the id is a special type of obj that mongo db uses
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  name            String? //these field r optional as we re also allow them to use the social login
+  email           String?   @unique
+  emailVerified   DateTime?
+  image           String?
+  hashedPassword  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  favoriteIds     String[] @db.ObjectId //we gon push the fav ids every time we favourite listing
+
+// these  r the relation fields
+// the user can ve multiple accs
+  accounts Account[]
+  listings Listing[]
+  reservations Reservation[]
+}
+
+// 2. Account modal
+model Account {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String   @db.ObjectId
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.String
+  access_token       String?  @db.String
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.String
+  session_state      String?
+  
+  //lets complete the user realations(b/w user and the acc), it reference the user modal id field with the id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+// we need the unique combination of these 2
+  @@unique([provider, providerAccountId])
+}
+
+// 3. listing modal
+
+model Listing {
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  description String
+  imageSrc String
+  createdAt DateTime @default(now())
+  category  String
+  roomCount Int
+  bathroomCount Int
+  guestCount Int
+  locationValue String
+  userId String @db.ObjectId
+  price Int
+
+//lly the relation b/w user and the listing, and this id field here refs the user modal id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservations Reservation[]
+}
+
+// 4. reservation modal
+
+model Reservation {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  listingId String @db.ObjectId  
+  startDate DateTime
+  endDate DateTime
+  totalPrice Int
+  createdAt DateTime @default(now())
+
+
+// this reservation modal has rlation with both user and the listing modal, and the id fields are representing the both user and the listing modals id fields corespondingly
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
