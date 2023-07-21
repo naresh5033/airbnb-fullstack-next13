@@ -111,4 +111,5 @@ Running commands with npm `npm run [command]`
 
 # Deployment
 
-- ```npm run lint```  once the app is deployed change the oauth url from the local host to the deployed site's url in both github and google cloud console
+- ```npm run lint```  once the app is deployed change the oauth url from the local host to the deployed site's url in both github and google cloud console.
+- the app was [depployed in versel and the url is](https://airbnb-next-rouge.vercel.app)
