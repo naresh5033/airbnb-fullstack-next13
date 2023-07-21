@@ -9,7 +9,7 @@ import ClientOnly from "./components/ClientOnly";
 interface HomeProps {
   searchParams: IListingsParams;
 }
-
+export const dynamic = 'force-dynamic';
 //since home is svr comp, we can call directly to the db, we don't need an api call for that.
 //so in the action dir (getListingById.ts) we ve fetched all the listings
 const Home = async ({ searchParams }: HomeProps) => {
